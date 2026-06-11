@@ -1,6 +1,5 @@
-def main():
-    print("Hello from paper-revision!")
+import pandas as pd
+import pyreadr
 
-
-if __name__ == "__main__":
-    main()
+res = pyreadr.read_r("data/spxOptionMetricsIvols.rData")
+print(res)
