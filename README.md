@@ -82,4 +82,23 @@ The algorithm needs aligned z-values. Therefore I propose the following approach
 
 The second option will probably result in rather odd looking clusters as the ranges of the individual slices varies quite dramatically. Therefore the range where many slices intersect will be small.
 
+## Arbitrage Analysis
 
+| Maturity Group | Number of Slices with Arb. | Pct. negative Area (indicator from the paper) |
+|----------------|----------------------------|-----------------------------------------------|
+| <=1wk          | 104 / 10299                | 0.0                                           |
+| 1m             | 51 / 31400                 | 1e-8                                          |
+| 3m             | 253 / 30989                | 1e-5                                          |
+| 6m             | 2928 / 21370               | 0.0002                                        |
+| 1y             | 7399 / 27025               | 0.0016                                        |
+| >1y            | 8373 / 22597               | 0.0190                                        |
+
+## Removed curves with inside NaN values
+
+| Maturity Group | Number of Slices with Arb. |
+|----------------|----------------------------|
+| <=1wk          | 10299 ->  4170             |
+| 1m             | 31400 -> 22782             |
+| 3m             | 30989 -> 22423             |
+| 6m             | 21370 -> 16914             |
+| 1y             | 27025 -> 22908             |
