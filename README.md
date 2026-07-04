@@ -102,3 +102,6 @@ The second option will probably result in rather odd looking clusters as the ran
 | 3m             | 30989 -> 22423             |
 | 6m             | 21370 -> 16914             |
 | 1y             | 27025 -> 22908             |
+
+# Distance calculations
+z_norm: z / max(|z|) + w_nromalisation
