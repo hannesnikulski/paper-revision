@@ -8,6 +8,8 @@ import pandas as pd
 
 from scipy.cluster.hierarchy import linkage, fcluster
 from scipy.spatial.distance import squareform
+from sklearn.cluster import HDBSCAN
+
 
 # ============================================================
 # Paths / Config
@@ -32,12 +34,12 @@ def format_bytes(n_bytes):
         size /= 1024
         
 def hierarchyClustering(distances: np.ndarray, groupID: int):
-    Z = linkage(distances, method="complete")
+    Z = linkage(distances, method="average")
     labels = fcluster(Z, t=N_CLUSTERS, criterion="maxclust")
 
     # labels start at 0
     labels -= 1
-    
+
     np.save(datadir / f"group_{groupID}_hierarchy_labels.npy", labels)
 
 def kmedoidsClustering(D: np.ndarray, groupID: int):
@@ -46,7 +48,17 @@ def kmedoidsClustering(D: np.ndarray, groupID: int):
         medoids=N_CLUSTERS,
     )
     labels = result.labels
+    medoids = result.medoids
+
     np.save(datadir / f"group_{groupID}_kmedoid_labels.npy", labels)
+    np.save(datadir / f"group_{groupID}_kmedoid_medoids.npy", medoids)
+
+def hdbscanClustering(D: np.ndarray, groupID: int):
+    hdb = HDBSCAN(copy=True, min_cluster_size=20, metric="precomputed")
+    hdb.fit(D)
+
+    np.save(datadir / f"group_{groupID}_hdbscan_labels.npy", hdb.labels_)
+
 
 df = pd.read_parquet(projectPath / "data" / "ivdata.parquet")
 
@@ -76,6 +88,7 @@ for groupID, (groupLabel, group) in enumerate(df.groupby("Group")):
     D = squareform(distances)
     print(f"Matrix Size: {format_bytes(D.nbytes)}")
     kmedoidsClustering(D, groupID)
+    hdbscanClustering(D, groupID)
     endTime = time.time()
     
     print(f"Clustering took: {endTime - startTime} seconds")

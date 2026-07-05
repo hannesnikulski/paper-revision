@@ -104,6 +104,7 @@ if __name__ == "__main__":
             wNormalized = w / w.mean()
 
             wInterp = np.interp(zgrid, z, wNormalized, left=np.nan, right=np.nan)
+            
             sliceMatrix.append(wInterp)
             sliceKeys.append(key)
 
