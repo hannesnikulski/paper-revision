@@ -1,0 +1,60 @@
+# ----------------------------------------------------------------------------------------------------
+# Objective function for Vola Dynamics (parametric expressions + template expression)
+# ----------------------------------------------------------------------------------------------------
+function objectiveFunction(tree, dataset::Dataset{T,L}, options)::L where {T,L}
+    asymptotic_value = 1e5
+    penalty = 1000.0
+    
+    # Evaluate expression on dataset
+    (pred, valid) = eval_tree_array(tree, dataset.X, options)
+    if !valid
+        return L(Inf)
+    end
+
+    # ----------------------------------------------------------------------------------------------------
+    # (Weighted) Mean Squared Error
+    # ----------------------------------------------------------------------------------------------------
+    diffs = pred .- dataset.y
+    if dataset.weights !== nothing
+        eval_loss = sum(dataset.weights .* diffs .^ 2) / length(diffs)
+    else
+        eval_loss = sum(diffs .^ 2) / length(diffs)
+    end
+
+    # ----------------------------------------------------------------------------------------------------
+    # Butterfly Arbitrage
+    # ----------------------------------------------------------------------------------------------------
+    input = [-0.1, 0.0, 0.1]'
+
+    (pred, valid) = eval_tree_array(tree, input, options)
+    if !valid
+        return L(Inf)
+    end
+
+    conv = (pred[1] .+ pred[3]) ./ 2 
+    mid = pred[2]
+
+    if conv < mid
+        return penalty * eval_loss
+    end
+
+    # ----------------------------------------------------------------------------------------------------
+    # Asymptotic behaviour
+    # ----------------------------------------------------------------------------------------------------
+    # Create sample with extreme strike values 
+    input = [-asymptotic_value, asymptotic_value]'
+
+    # Evaluate expression at extreme values
+    (pred, valid) = eval_tree_array(tree, input, options)
+    if !valid
+        return L(Inf)
+    end
+    
+    # Penalize if expression grows to fast
+    growth = pred ./ (2.0 * asymptotic_value)
+    if any(abs.(growth) .> 2)
+        return penalty * eval_loss
+    end
+
+    return eval_loss
+end

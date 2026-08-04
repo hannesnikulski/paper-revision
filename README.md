@@ -105,3 +105,9 @@ The second option will probably result in rather odd looking clusters as the ran
 
 # Distance calculations
 z_norm: z / max(|z|) + w_nromalisation
+
+# Clustering
+- Use Kmedoids
+  - z, w values were normalized for distance calculation
+- Selection:
+  - 
