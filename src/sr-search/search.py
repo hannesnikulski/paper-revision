@@ -129,16 +129,16 @@ def main():
         # 'skip_mutation_failures': False,
 
         # Constant optimization
-        # 'optimizer_iterations': 64,
-        # 'optimize_probability': 0.5,
+        'optimizer_iterations': 16,
+        'optimize_probability': 0.5,
 
         # Stopping criteria
         'early_stop_condition': 'f(loss, complexity) = (loss < 1e-9) && (complexity < 18)',
 
         # Performance
         'precision': 64,
-        # 'batching': True,
-        # 'fast_cycle': True,
+        'batching': True,
+        'fast_cycle': True,
 
         'turbo': True,
         'bumper': True,
@@ -149,8 +149,18 @@ def main():
         # --------------------------------------------------
         # Operators and constraints
         # --------------------------------------------------
-        'binary_operators': ['+', '*', '/', '^'],
-        'unary_operators': ['square', 'sqrt', 'exp', 'log'],
+        'binary_operators': [
+            '+',
+            '*',
+            '/',
+            '^'
+        ],
+        'unary_operators': [
+            'square',
+            'sqrt',
+            'exp', 'log',
+            'tanh'
+        ],
         'nested_constraints': {
             'square': {'sqrt': 0, 'square': 0, '+': 2, '*': 2},
             'exp': {'log': 0, 'exp': 0, '+': 2, '*': 2},
@@ -160,7 +170,7 @@ def main():
             '/': {'/': 0, '+': 2, '*': 2},
             '^': {'^': 0, '+': 2, '*': 2},
             'sqrt': {'sqrt': 0, '+': 2, '*': 2},
-            # 'tanh': {'tanh': 0, '+': 2, '*': 2}
+            'tanh': {'tanh': 0, '+': 2, '*': 2}
         },
         'constraints': {'/': (-1, 5), '^': (-1, 1)},
         'complexity_of_constants': 10,
@@ -222,8 +232,7 @@ def main():
     numCategories = np.unique(matrix[:, 2]).shape[0]
 
     X_with_category = matrix[:, [0, 2]]
-    W = matrix[:, [1]]
-    # weights = matrix[:, 3]
+    Y = matrix[:, [1]]
 
     # --------------------------------------------------
     # Create PySR model
@@ -254,8 +263,7 @@ def main():
     # ----------------------------------------------------------------------------------------------------
     # Fit
     # ----------------------------------------------------------------------------------------------------
-    # model.fit(X_with_category, W, weights=weights)
-    model.fit(X_with_category, W)
+    model.fit(X_with_category, Y)
     logger.info('PySR search completed')
 
 

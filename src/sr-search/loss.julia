@@ -22,12 +22,17 @@ function objectiveFunction(tree, dataset::Dataset{T,L}, options)::L where {T,L}
     end
 
     # ----------------------------------------------------------------------------------------------------
+    # Penalize negative evaluations
+    # ----------------------------------------------------------------------------------------------------
+    if any(pred .< 0)
+        return penalty * eval_loss
+    end
+
+    # ----------------------------------------------------------------------------------------------------
     # Butterfly Arbitrage
     # ----------------------------------------------------------------------------------------------------
     classes = unique(dataset.X[2, :])
     input = hcat(repeat([-0.1, 0.0, 0.1], length(classes)), repeat(classes, inner=3))'
-    
-    # println(input)
 
     (pred, valid) = eval_tree_array(tree, input, options)
     if !valid
